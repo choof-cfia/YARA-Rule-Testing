@@ -1,41 +1,37 @@
-rule M_Launcher_FONELAUNCH_3
+rule M_Downloader_GOOTLOADER_POWERSHELL
 
 {
 
-    meta:
+  meta:
 
-      author = “Mandiant”
+    author = "Mandiant"
 
-      description = “Hunting rule looking for FONELAUNCH.PHONE samples.”
+    description = "Hunting rule looking for GOOTLOADER.POWERSHELL samples."
 
-      md5 = "ec17564ac3e10530f11a455a475f9763"
-
- 
-
-    strings:
-
-      $str_winfunction = "LoadLibrary" ascii
-
-      $str_registrykey = "SOFTWARE\\" wide
-
-      $str_constant = "PAGE_EXECUTE_READWRITE" ascii
+    md5 = "2567a2bca964504709820de7052d3486"
 
  
 
-      $ilasmx86_sequence_encoding_a = { 0A 06 02 7D [3] 04 00 16 06 }
+  strings:
 
-      $ilasmx86_sequence_encoding_b = { 72 [3] 70 72 [3] 70 6F ?? 00 00 0A }
+    $ps_object_a = ".IsLink" ascii
+
+    $ps_object_b = ".IsFolder" ascii
+
+    $ps_object_c = ".IsFileSystem" ascii
+
+   
+
+    $ps_code_parseresponse = "[1] -replace" ascii nocase
+
+    $ps_code_httpheader = ".Headers.Add(\"Cookie:" ascii nocase
+
+    $ps_code_concatenatedata = "([String]::Join(\"|" ascii nocase
 
  
 
-    condition:
+  condition:
 
-      uint16(0) == 0x5A4D and all of ($str_*) and
-
-      (
-
-        $ilasmx86_sequence_encoding_a and #ilasmx86_sequence_encoding_b >= 16
-
-      )
+    all of ($ps_code_*) and any of ($ps_object_*)
 
 }
